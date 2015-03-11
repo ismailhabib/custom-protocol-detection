@@ -10,6 +10,9 @@ $(function () {
     }
 
     function openInModelerUsingFirefox(mendixUri, failCb) {
+        if ($("#hiddenIframe").length === 0) {
+            $("body").append('<iframe id="hiddenIframe" src="about:blank" style="display:none"></iframe>');
+        }
         try {
             var iFrame = $("#hiddenIframe")[0];
             iFrame.contentWindow.location.href = mendixUri;
@@ -44,6 +47,10 @@ $(function () {
         $(window).blur(function () {
             clearTimeout(timeout);
         });
+
+        if ($("#hiddenIframe").length === 0) {
+            $("body").append('<iframe id="hiddenIframe" src="about:blank" style="display:none"></iframe>');
+        }
         var iFrame = $("#hiddenIframe")[0];
         try {
             iFrame.contentWindow.location.href = mendixUri;
@@ -99,8 +106,9 @@ $(function () {
     }
 
     function checkBrowser() {
+        var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
         return {
-            isOpera: !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0,
+            isOpera: isOpera,
             // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
             isFirefox: typeof InstallTrigger !== 'undefined',   // Firefox 1.0+
             isSafari: Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
@@ -110,22 +118,19 @@ $(function () {
         }
     }
 
-    function getInternetExplorerVersion()
-    {
+    function getInternetExplorerVersion() {
         var rv = -1;
-        if (navigator.appName == 'Microsoft Internet Explorer')
-        {
+        if (navigator.appName == 'Microsoft Internet Explorer') {
             var ua = navigator.userAgent;
-            var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+            var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
             if (re.exec(ua) != null)
-                rv = parseFloat( RegExp.$1 );
+                rv = parseFloat(RegExp.$1);
         }
-        else if (navigator.appName == 'Netscape')
-        {
+        else if (navigator.appName == 'Netscape') {
             var ua = navigator.userAgent;
-            var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+            var re = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
             if (re.exec(ua) != null)
-                rv = parseFloat( RegExp.$1 );
+                rv = parseFloat(RegExp.$1);
         }
         return rv;
     }
