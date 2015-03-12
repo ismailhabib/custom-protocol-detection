@@ -1,24 +1,49 @@
-window.protocolCheck = (function () {
+(function (window) {
+
+    function _registerEvent(target, eventType, cb) {
+        target.addEventListener(eventType, cb);
+        return {
+            remove: function () {
+                target.removeEventListener(eventType, cb);
+            }
+        };
+    }
+
+    function _createHiddenIframe(target, uri) {
+        var iframe = document.createElement("iframe");
+        iframe.src = uri;
+        iframe.style.display = "none";
+        target.appendChild(iframe);
+        return iframe;
+    }
+
     function openUriUsingChrome(uri, failCb) {
+
         var timeout = setTimeout(function () {
-            failCb && failCb();
+            failCb();
+            handler.remove();
         }, 1000);
-        $(window).blur(function () {
+
+        var handler = _registerEvent(window, "blur", onBlur);
+
+        function onBlur() {
             clearTimeout(timeout);
-        });
+            handler.remove();
+        }
+
         window.location = uri;
     }
 
     function openUriUsingFirefox(uri, failCb) {
-        if ($("#hiddenIframe").length === 0) {
-            $("body").append('<iframe id="hiddenIframe" src="about:blank" style="display:none"></iframe>');
+        var iframe = document.querySelector("#hiddenIframe");
+        if (!iframe) {
+            iframe = _createHiddenIframe(document.body, "about:blank");
         }
         try {
-            var iFrame = $("#hiddenIframe")[0];
-            iFrame.contentWindow.location.href = uri;
+            iframe.contentWindow.location.href = uri;
         } catch (e) {
             if (e.name == "NS_ERROR_UNKNOWN_PROTOCOL") {
-                failCb && failCb();
+                failCb();
             }
         }
     }
@@ -31,8 +56,7 @@ window.protocolCheck = (function () {
         if (isWin8) {
             openUriUsingIEInWindows8(uri, failCb);
         } else {
-            ieVersion = getInternetExplorerVersion();
-            if (ieVersion === 10) {
+            if (getInternetExplorerVersion() === 10) {
                 openUriUsingIE10InWindows7(uri, failCb);
             } else {
                 openUriUsingOtherIEFunkyVersion(uri, failCb);
@@ -41,44 +65,36 @@ window.protocolCheck = (function () {
     }
 
     function openUriUsingIE10InWindows7(uri, failCb) {
-        var timeout = setTimeout(function () {
-            failCb && failCb();
-        }, 1000);
-        $(window).blur(function () {
+        var timeout = setTimeout(failCb, 1000);
+        window.addEventListener("blur", function () {
             clearTimeout(timeout);
         });
 
-        if ($("#hiddenIframe").length === 0) {
-            $("body").append('<iframe id="hiddenIframe" src="about:blank" style="display:none"></iframe>');
+        var iframe = document.querySelector("#hiddenIframe");
+        if (!iframe) {
+            iframe = _createHiddenIframe(document.body, "about:blank");
         }
-        var iFrame = $("#hiddenIframe")[0];
         try {
-            iFrame.contentWindow.location.href = uri;
+            iframe.contentWindow.location.href = uri;
         } catch (e) {
-            alert("wrong!");
+            failCb();
+            clearTimeout(timeout);
         }
     }
 
     function openUriUsingOtherIEFunkyVersion(uri, failCb) {
-        var isSupported = false;
         var myWindow = window.open('', '', 'width=0,height=0');
+
         myWindow.document.write("<iframe src='" + uri + "'></iframe>");
         setTimeout(function () {
             try {
                 myWindow.location.href;
-                isSupported = true;
+                myWindow.setTimeout("window.close()", 1000);
             } catch (e) {
-            }
-
-            if (isSupported) {
-                myWindow.setTimeout('window.close()', 1000);
-            } else {
                 myWindow.close();
+                failCb();
             }
-            if (!isSupported) {
-                failCb && failCb();
-            }
-        }, 1000)
+        }, 1000);
     }
 
     function openUriUsingIEInWindows8(uri, failCb) {
@@ -87,9 +103,7 @@ window.protocolCheck = (function () {
                 function () {
                     window.location = uri;
                 },
-                function () {
-                    failCb && failCb();
-                }
+                failCb
             );
         }
     }
@@ -98,42 +112,44 @@ window.protocolCheck = (function () {
         var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
         return {
             isOpera: isOpera,
-            // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
-            isFirefox: typeof InstallTrigger !== 'undefined',   // Firefox 1.0+
+            isFirefox: typeof InstallTrigger !== 'undefined',
             isSafari: Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
-            // At least Safari 3+: "[object HTMLElementConstructor]"
-            isChrome: !!window.chrome && !isOpera,              // Chrome 1+
+            isChrome: !!window.chrome && !isOpera,
             isIE: /*@cc_on!@*/false || !!document.documentMode   // At least IE6
         }
     }
 
     function getInternetExplorerVersion() {
         var rv = -1;
-        if (navigator.appName == 'Microsoft Internet Explorer') {
+        if (navigator.appName === "Microsoft Internet Explorer") {
             var ua = navigator.userAgent;
             var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
             if (re.exec(ua) != null)
                 rv = parseFloat(RegExp.$1);
         }
-        else if (navigator.appName == 'Netscape') {
+        else if (navigator.appName === "Netscape") {
             var ua = navigator.userAgent;
             var re = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
-            if (re.exec(ua) != null)
+            if (re.exec(ua) != null) {
                 rv = parseFloat(RegExp.$1);
+            }
         }
         return rv;
     }
 
-    var openUri = function(uri, failCb) {
+    window.protocolCheck = function (uri, failCb) {
         var browser = checkBrowser();
+        function failCallback() {
+            failCb && failCb();
+        }
         if (browser.isFirefox) {
-            openUriUsingFirefox(uri, failCb);
+            openUriUsingFirefox(uri, failCallback);
         } else if (browser.isChrome) {
-            openUriUsingChrome(uri, failCb);
+            openUriUsingChrome(uri, failCallback);
         } else if (browser.isIE) {
-            openUriUsingIE(uri, failCb);
+            openUriUsingIE(uri, failCallback);
+        } else {
+            //not supported, implement please
         }
     }
-
-    return openUri;
-}());
+}(window));
