@@ -58,6 +58,8 @@
         } else {
             if (getInternetExplorerVersion() === 10) {
                 openUriUsingIE10InWindows7(uri, failCb);
+            } else if (getInternetExplorerVersion() === 11) {
+                openUriUsingIE11InWindows7(uri, failCb);
             } else {
                 openUriWithTimeoutHack(uri, failCb);
             }
@@ -80,6 +82,22 @@
             failCb();
             clearTimeout(timeout);
         }
+    }
+
+
+    function openUriUsingIE11InWindows7(uri, failCb) {
+        var myWindow = window.open('', '', 'width=0,height=0');
+
+        myWindow.document.write("<iframe src='" + uri + "'></iframe>");
+        setTimeout(function () {
+            try {
+                myWindow.location.href;
+                myWindow.setTimeout("window.close()", 1000);
+            } catch (e) {
+                myWindow.close();
+                failCb();
+            }
+        }, 1000);
     }
 
     function openUriUsingIEInWindows8(uri, failCb) {
