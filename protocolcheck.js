@@ -17,7 +17,7 @@
         return iframe;
     }
 
-    function openUriUsingChrome(uri, failCb) {
+    function openUriWithTimeoutHack(uri, failCb) {
 
         var timeout = setTimeout(function () {
             failCb();
@@ -59,7 +59,7 @@
             if (getInternetExplorerVersion() === 10) {
                 openUriUsingIE10InWindows7(uri, failCb);
             } else {
-                openUriUsingOtherIEFunkyVersion(uri, failCb);
+                openUriWithTimeoutHack(uri, failCb);
             }
         }
     }
@@ -80,21 +80,6 @@
             failCb();
             clearTimeout(timeout);
         }
-    }
-
-    function openUriUsingOtherIEFunkyVersion(uri, failCb) {
-        var myWindow = window.open('', '', 'width=0,height=0');
-
-        myWindow.document.write("<iframe src='" + uri + "'></iframe>");
-        setTimeout(function () {
-            try {
-                myWindow.location.href;
-                myWindow.setTimeout("window.close()", 1000);
-            } catch (e) {
-                myWindow.close();
-                failCb();
-            }
-        }, 1000);
     }
 
     function openUriUsingIEInWindows8(uri, failCb) {
@@ -139,13 +124,15 @@
 
     window.protocolCheck = function (uri, failCb) {
         var browser = checkBrowser();
+
         function failCallback() {
             failCb && failCb();
         }
+
         if (browser.isFirefox) {
             openUriUsingFirefox(uri, failCallback);
         } else if (browser.isChrome) {
-            openUriUsingChrome(uri, failCallback);
+            openUriWithTimeoutHack(uri, failCallback);
         } else if (browser.isIE) {
             openUriUsingIE(uri, failCallback);
         } else {
