@@ -21,6 +21,7 @@
     function _createHiddenIframe(target, uri) {
         var iframe = document.createElement("iframe");
         iframe.src = uri;
+        iframe.id = "hiddenIframe";
         iframe.style.display = "none";
         target.appendChild(iframe);
         return iframe;
