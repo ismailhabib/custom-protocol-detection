@@ -1,12 +1,21 @@
 (function (window) {
 
     function _registerEvent(target, eventType, cb) {
-        target.addEventListener(eventType, cb);
-        return {
-            remove: function () {
-                target.removeEventListener(eventType, cb);
-            }
-        };
+        if (target.addEventListener) {
+            target.addEventListener(eventType, cb);
+            return {
+                remove: function () {
+                    target.removeEventListener(eventType, cb);
+                }
+            };
+        } else {
+            target.attachEvent(eventType, cb);
+            return {
+                remove: function () {
+                    target.detachEvent(eventType, cb);
+                }
+            };
+        }
     }
 
     function _createHiddenIframe(target, uri) {
@@ -15,6 +24,28 @@
         iframe.style.display = "none";
         target.appendChild(iframe);
         return iframe;
+    }
+
+    function openUriWithHiddenFrame(uri, failCb) {
+
+        var timeout = setTimeout(function () {
+            failCb();
+            handler.remove();
+        }, 1000);
+
+        var iframe = document.querySelector("#hiddenIframe");
+        if (!iframe) {
+            iframe = _createHiddenIframe(document.body, "about:blank");
+        }
+
+        var handler = _registerEvent(window, "blur", onBlur);
+
+        function onBlur() {
+            clearTimeout(timeout);
+            handler.remove();
+        }
+
+        iframe.contentWindow.location.href = uri;
     }
 
     function openUriWithTimeoutHack(uri, failCb) {
@@ -58,10 +89,8 @@
         } else {
             if (getInternetExplorerVersion() === 10) {
                 openUriUsingIE10InWindows7(uri, failCb);
-            } else if (getInternetExplorerVersion() === 11) {
-                openUriUsingIE11InWindows7(uri, failCb);
             } else {
-                openUriWithTimeoutHack(uri, failCb);
+                openUriInNewWindowHack(uri, failCb);
             }
         }
     }
@@ -85,7 +114,7 @@
     }
 
 
-    function openUriUsingIE11InWindows7(uri, failCb) {
+    function openUriInNewWindowHack(uri, failCb) {
         var myWindow = window.open('', '', 'width=0,height=0');
 
         myWindow.document.write("<iframe src='" + uri + "'></iframe>");
