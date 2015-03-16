@@ -89,6 +89,8 @@
         } else {
             if (getInternetExplorerVersion() === 10) {
                 openUriUsingIE10InWindows7(uri, failCb);
+            } else if (getInternetExplorerVersion() === 11) {
+                openUriWithHiddenFrame(uri, failCb);
             } else {
                 openUriInNewWindowHack(uri, failCb);
             }
@@ -112,7 +114,6 @@
             clearTimeout(timeout);
         }
     }
-
 
     function openUriInNewWindowHack(uri, failCb) {
         var myWindow = window.open('', '', 'width=0,height=0');
