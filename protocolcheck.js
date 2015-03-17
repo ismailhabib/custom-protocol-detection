@@ -90,7 +90,7 @@
         } else {
             if (getInternetExplorerVersion() === 10) {
                 openUriUsingIE10InWindows7(uri, failCb);
-            } else if (getInternetExplorerVersion() === 11) {
+            } else if (getInternetExplorerVersion() === 9 || getInternetExplorerVersion() === 11) {
                 openUriWithHiddenFrame(uri, failCb);
             } else {
                 openUriInNewWindowHack(uri, failCb);
