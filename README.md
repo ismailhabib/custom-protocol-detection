@@ -1,5 +1,5 @@
 # Custom Protocol Detection in Browser
-Detect whether a custom protocol is available in browser (FF, Chrome, IE8, IE9, IE10, and IE11)
+Detect whether a custom protocol is available in browser (FF, Chrome, IE8, IE9, IE10, IE11, and Edge)
 
 The implementation is different from one browser to another, sometimes depend on which OS you are. Most of them are hacks, meaning that the solution is not the prettiest.
 
