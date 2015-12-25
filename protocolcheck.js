@@ -80,21 +80,13 @@
         }
     }
 
-    function openUriUsingIE(uri, failCb) {
-        //check if OS is Win 8 or 8.1
-        var ua = navigator.userAgent.toLowerCase();
-        var isWin8 = /windows nt 6.2/.test(ua) || /windows nt 6.3/.test(ua);
-
-        if (isWin8) {
-            openUriUsingIEInWindows8(uri, failCb);
+    function openUriUsingIEInOlderWindows(uri, failCb) {
+        if (getInternetExplorerVersion() === 10) {
+            openUriUsingIE10InWindows7(uri, failCb);
+        } else if (getInternetExplorerVersion() === 9 || getInternetExplorerVersion() === 11) {
+            openUriWithHiddenFrame(uri, failCb);
         } else {
-            if (getInternetExplorerVersion() === 10) {
-                openUriUsingIE10InWindows7(uri, failCb);
-            } else if (getInternetExplorerVersion() === 9 || getInternetExplorerVersion() === 11) {
-                openUriWithHiddenFrame(uri, failCb);
-            } else {
-                openUriInNewWindowHack(uri, failCb);
-            }
+            openUriInNewWindowHack(uri, failCb);
         }
     }
 
@@ -131,15 +123,12 @@
         }, 1000);
     }
 
-    function openUriUsingIEInWindows8(uri, failCb) {
-        if (navigator.msLaunchUri) {
-            navigator.msLaunchUri(uri,
-                function () {
-                    window.location = uri;
-                },
-                failCb
+    function openUriWithMsLaunchUri(uri, failCb) {
+        navigator.msLaunchUri(uri,
+            function () {
+            },
+            failCb
             );
-        }
     }
 
     function checkBrowser() {
@@ -172,20 +161,24 @@
     }
 
     window.protocolCheck = function (uri, failCb) {
-        var browser = checkBrowser();
-
         function failCallback() {
             failCb && failCb();
         }
 
-        if (browser.isFirefox) {
-            openUriUsingFirefox(uri, failCallback);
-        } else if (browser.isChrome) {
-            openUriWithTimeoutHack(uri, failCallback);
-        } else if (browser.isIE) {
-            openUriUsingIE(uri, failCallback);
+        if (navigator.msLaunchUri) { //for IE and Edge in Win 8 and Win 10
+            openUriWithMsLaunchUri(uri, failCb);
         } else {
-            //not supported, implement please
+            var browser = checkBrowser();
+
+            if (browser.isFirefox) {
+                openUriUsingFirefox(uri, failCallback);
+            } else if (browser.isChrome) {
+                openUriWithTimeoutHack(uri, failCallback);
+            } else if (browser.isIE) {
+                openUriUsingIEInOlderWindows(uri, failCallback);
+            } else {
+                //not supported, implement please
+            }
         }
     }
-}(window));
+} (window));
