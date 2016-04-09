@@ -56,7 +56,13 @@
             handler.remove();
         }, 1000);
 
-        var handler = _registerEvent(window, "blur", onBlur);
+        //handle page running in an iframe (blur must be registered with top level window)
+        var target = window;
+        while (target != target.parent) {
+            target = target.parent;
+        }
+
+        var handler = _registerEvent(target, "blur", onBlur);
 
         function onBlur() {
             clearTimeout(timeout);
