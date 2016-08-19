@@ -93,12 +93,26 @@
     }
 
     function openUriUsingIEInOlderWindows(uri, failCb, successCb) {
-        if (getInternetExplorerVersion() === 10) {
-            openUriUsingIE10InWindows7(uri, failCb, successCb);
-        } else if (getInternetExplorerVersion() === 9 || getInternetExplorerVersion() === 11) {
-            openUriWithHiddenFrame(uri, failCb, successCb);
+    	var iframe;
+    	// If your application has the luxury of adding a custom string to navigator.userAgent via the registry,
+    	// check for it here first.
+        if (navigator.userAgent != null && navigator.userAgent.indexOf(uri.substr(0, uri.indexOf('://'))) !== -1) {
+        	if (getInternetExplorerVersion() <= 8) {
+    	        openUriInNewWindowHack(uri, failCb, successCb);
+        	} else {
+	            iframe = _createHiddenIframe(document.body, "about:blank");
+    	        iframe.contentWindow.location.href = uri;
+        		successCb();
+        	}
         } else {
-            openUriInNewWindowHack(uri, failCb, successCb);
+        	// Can't determine from custom string in navigator.userAgent. Fallback to other methods
+	        if (getInternetExplorerVersion() === 10) {
+    	        openUriUsingIE10InWindows7(uri, failCb, successCb);
+        	} else if (getInternetExplorerVersion() === 9 || getInternetExplorerVersion() === 11) {
+            	openUriWithHiddenFrame(uri, failCb, successCb);
+	        } else {
+    	        openUriInNewWindowHack(uri, failCb, successCb);
+        	}
         }
     }
 
