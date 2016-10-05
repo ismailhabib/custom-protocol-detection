@@ -138,7 +138,7 @@
         }, 1000);
     }
     
-    function openUriWithMsLaunchUri(uri, failCb) {
+    function openUriWithMsLaunchUri(uri, failCb, successCb) {
         navigator.msLaunchUri(uri,
             successCb,
             failCb
@@ -184,7 +184,7 @@
         }
 
         if (navigator.msLaunchUri) { //for IE and Edge in Win 8 and Win 10
-            openUriWithMsLaunchUri(url, failCb, successCb);
+            openUriWithMsLaunchUri(uri, failCb, successCb);
         } else {
             var browser = checkBrowser();
 
