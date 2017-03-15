@@ -1,6 +1,6 @@
 {
   "name": "custom-protocol-detection",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Detect whether a custom protocol is available in browser (FF, Chrome, IE8, IE9, IE10, IE11, and Edge)",
   "main": "index.js",
   "scripts": {

@@ -51,7 +51,7 @@ function openUriWithHiddenFrame(uri, failCb, successCb) {
 }
 
 function openUriWithTimeoutHack(uri, failCb, successCb) {
-    
+
     var timeout = setTimeout(function () {
         failCb();
         handler.remove();
@@ -195,6 +195,7 @@ module.exports = function(uri, failCb, successCb) {
             openUriUsingIEInOlderWindows(uri, failCallback, successCallback);
         } else {
             //not supported, implement please
+            failCallback();
         }
     }
 }

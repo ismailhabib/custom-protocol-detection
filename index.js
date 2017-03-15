@@ -194,6 +194,7 @@ module.exports = function(uri, failCb, successCb) {
             openUriUsingIEInOlderWindows(uri, failCallback, successCallback);
         } else {
             //not supported, implement please
+            failCallback();
         }
     }
 }
