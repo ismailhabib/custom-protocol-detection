@@ -123,18 +123,23 @@ function openUriUsingIE10InWindows7(uri, failCb, successCb) {
 function openUriInNewWindowHack(uri, failCb, successCb) {
     var myWindow = window.open('', '', 'width=0,height=0');
 
-    myWindow.document.write("<iframe src='" + uri + "'></iframe>");
+    if (myWindow !== null && typeof myWindow === 'object') {
+        myWindow.document.write("<iframe src='" + uri + "'></iframe>");
 
-    setTimeout(function () {
-        try {
-            myWindow.location.href;
-            myWindow.setTimeout("window.close()", 1000);
-            successCb();
-        } catch (e) {
-            myWindow.close();
-            failCb();
-        }
-    }, 1000);
+        setTimeout(function () {
+            try {
+                myWindow.location.href;
+                myWindow.setTimeout("window.close()", 1000);
+                successCb();
+            } catch (e) {
+                myWindow.close();
+                failCb();
+            }
+        }, 1000);
+    } else {
+        // New window is blocked
+        failCb();
+    }
 }
 
 function openUriWithMsLaunchUri(uri, failCb, successCb) {
