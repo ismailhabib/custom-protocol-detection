@@ -85,7 +85,8 @@ function openUriUsingFirefox(uri, failCb, successCb) {
         iframe.contentWindow.location.href = uri;
         successCb();
     } catch (e) {
-        if (e.name == "NS_ERROR_UNKNOWN_PROTOCOL") {
+        // Catch errors for either unknown protocols or registered protocols where the associated application isn't installed
+        if (e.name == "NS_ERROR_UNKNOWN_PROTOCOL" || e.name == "NS_ERROR_FAILURE") {
             failCb();
         }
     }
