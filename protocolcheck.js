@@ -8,6 +8,7 @@ function _registerEvent(target, eventType, cb) {
             }
         };
     } else {
+        eventType = "on" + eventType;
         target.attachEvent(eventType, cb);
         return {
             remove: function () {
