@@ -126,16 +126,31 @@ function openUriInNewWindowHack(uri, failCb, successCb) {
     if (myWindow !== null && typeof myWindow === 'object') {
         myWindow.document.write("<iframe src='" + uri + "'></iframe>");
 
+        // Try opening the protocol (determines if protocol is installed)
+        try {
+            // If there's no error, the protocol is installed
+            myWindow.location.href;
+            setTimeout(function () {myWindow.close()}, 50);
+        } catch (e) {
+            // If there's an error, the protocol isn't installed
+            myWindow.close();
+            failCb();
+        }
+        // Try detecting a blur event in the main window (determines if an application launched)
         setTimeout(function () {
-            try {
-                myWindow.location.href;
-                myWindow.setTimeout("window.close()", 1000);
-                successCb();
-            } catch (e) {
-                myWindow.close();
+            var timeout = setTimeout(function () {
+                handler.remove();
                 failCb();
+            }, 1000);
+            
+            var handler = _registerEvent(window, "blur", onBlur);
+
+            function onBlur () {
+                clearTimeout(timeout);
+                handler.remove();
+                successCb();
             }
-        }, 1000);
+        }, 100); // Wait until after the pop-up window closes before detecting any blur events trigger by the application launching
     } else {
         // New window is blocked
         failCb();
