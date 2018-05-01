@@ -1,32 +1,21 @@
 const assert = require('assert');
 
 describe('Custom Protocol Detection', () => {
-	it('Alerts the protocol is not detected when not available', () => {
-		browser.url('http://localhost:8080/example.html');
+	it('Fires the success callback when the protocol is detected', () => {
+		browser.url('http://localhost:8080/test.html');
 		const successDiv = $('#success')
 		successDiv.click();
 		browser.pause(2000)
-		try {
-			browser.alertText();
-			return false;
-		} catch(e){
-			if (e.message === 'no alert open') {
-				browser.reload();
-				return true;
-			} else {
-				console.log(e);
-				console.log('Wrong Error - should read no alert open');
-				return false;
-			}
-		}
+		assert.equal($('#result').getText(), 'success');
+		browser.reload();
 	});
 
-	it('Calls window.alert when the protocol is not detected', () => {
-		browser.url('http://localhost:8080/example.html');
+	it('Fires the failure callback when the protocol is detected', () => {
+		browser.url('http://localhost:8080/test.html');
 		browser.pause(1000)
 		const successDiv = $('#fail');
 		successDiv.click();
 		browser.pause(2000)
-		assert.equal(browser.alertText(), 'protocol not recognized');
+		assert.equal($('#result').getText(), 'fail');
 	});
 });
