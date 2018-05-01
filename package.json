@@ -4,7 +4,8 @@
   "description": "Detect whether a custom protocol is available in browser (FF, Chrome, IE8, IE9, IE10, IE11, and Edge)",
   "main": "index.js",
   "scripts": {
-    "build": "browserify index.js --standalone protocolCheck > protocolcheck.js"
+    "build": "browserify index.js --standalone protocolCheck > protocolcheck.js",
+    "test": "wdio wdio.conf.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,11 @@
   },
   "homepage": "https://github.com/ismailhabib/custom-protocol-detection#readme",
   "devDependencies": {
-    "browserify": "^13.1.1"
+    "browserify": "^13.1.1",
+    "express": "^4.16.3",
+    "wdio-mocha-framework": "^0.5.13",
+    "wdio-selenium-standalone-service": "0.0.10",
+    "wdio-spec-reporter": "^0.1.4",
+    "webdriverio": "^4.12.0"
   }
 }
