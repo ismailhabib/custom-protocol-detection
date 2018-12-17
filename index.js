@@ -175,6 +175,11 @@ function getInternetExplorerVersion() {
 }
 
 function getTimeouts(timeouts) {
+    timeouts = timeouts || {
+        chromeAndIOS: 1000,
+        legacyIE: 1000,
+        safari: 1000
+    };
     return {
         chromeAndIOS: parseInt(timeouts.chromeAndIOS) || 1000,
         legacyIE: parseInt(timeouts.legacyIE) || 1000,
