@@ -199,6 +199,7 @@ module.exports = function(uri, failCb, successCb, unsupportedCb) {
         } else {
             unsupportedCb();
             //not supported, implement please
+            failCallback();
         }
     }
 }
