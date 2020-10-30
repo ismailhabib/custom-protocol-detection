@@ -1,3 +1,5 @@
+# Warning: this library is no longer maintained
+
 # Custom Protocol Detection in Browser
 Detect whether a custom protocol is available in browser (FF, Chrome, IE8, IE9, IE10, IE11, and Edge)
 
