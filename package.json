@@ -1,7 +1,7 @@
 {
   "name": "custom-protocol-detection",
-  "version": "1.0.1",
-  "description": "Detect whether a custom protocol is available in browser (FF, Chrome, IE8, IE9, IE10, IE11, and Edge)",
+  "version": "1.0.2",
+  "description": "Detect whether a custom protocol is available in browser (FF, Chrome, IE8, IE9, IE10, IE11, Edge, and Safari)",
   "main": "index.js",
   "scripts": {
     "build": "browserify index.js --standalone protocolCheck > protocolcheck.js"
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/ismailhabib/custom-protocol-detection.git"
   },
   "keywords": [],
-  "author": "Ismail Habib Muhammad (https://github.com/ismailhabib)",
+  "author": "Ismail Habib Muhammad (https://github.com/ismailhabib), Emil Atanasov (https://github.com/heitara/)",
   "bugs": {
     "url": "https://github.com/ismailhabib/custom-protocol-detection/issues"
   },

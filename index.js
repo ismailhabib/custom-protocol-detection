@@ -26,6 +26,15 @@ function _createHiddenIframe(target, uri) {
     return iframe;
 }
 
+function _removeHidenIframe(target) {
+    let iframe = document.querySelector("#hiddenIframe")
+    if(iframe) {
+        if(iframe.parentElement == target) {
+            target.removeChild(iframe)
+        }
+    }
+}
+
 function openUriWithHiddenFrame(uri, failCb, successCb) {
 
     var timeout = setTimeout(function () {
@@ -82,10 +91,21 @@ function openUriUsingFirefox(uri, failCb, successCb) {
 
     try {
         iframe.contentWindow.location.href = uri;
-        successCb();
+
+        setTimeout(function () {
+            if(iframe.contentDocument == null) {
+                frame = null
+                _removeHidenIframe(document.body)
+                failCb()
+            } else {
+                frame = null
+                _removeHidenIframe(document.body)
+                successCb()
+            }
+        }, 200)
     } catch (e) {
         if (e.name == "NS_ERROR_UNKNOWN_PROTOCOL") {
-            failCb();
+            // failCb();
         }
     }
 }
